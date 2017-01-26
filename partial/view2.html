@@ -1,0 +1,49 @@
+<ul class="steps">
+	<li ng-click="change_step( 0 )"> Step 1 : Gravity Form </li>
+	<li class="active"> Step 2 : Addtional Columns </li>
+</ul>
+<div class="step-content columns">
+	<p> Create additional editable columns to be added to data table. </p>
+	
+	<div id="data-column">
+
+		<div class="column" ng-repeat="data in columns_data">
+			<div class="column-header" data-id="{{ data }}">
+			
+				<h3> {{ column_titles[data] }} </h3>
+				
+				<button id="remove_column" ng-click="remove_columns(data)"> Remove <i class="fa fa-minus" aria-hidden="true"></i>  </button>
+			</div>
+			<div class="column-content">
+				<label for="column-title-{{data}}"> Column Title: </label>
+				<input type="text" name="column-title-{{data}}" ng-model="column_titles[data]"/> <br>
+				<label for="column-fields-{{data}}"> Select column field type: </label>
+
+				<select name="column-fields-{{data}}" ng-change="selected_field_type(data)" ng-model="selected_fields[data]" ng-options="fields as fields for fields in column_field_types" > </select>
+				<br>
+					<div class="values" ng-repeat="val in values[data]">
+					<br>
+						<label for="column-value-{{data}}"> Value {{ val }}: </label>
+						<input type="text" name="column-value-{{val}}" ng-change="input_value(data)" ng-model="vals[data][val]" />
+						<button ng-click="remove_value( data, val )" ng-if="selected_fields[data] != 'text' && selected_fields[data] != 'textarea' && values[data] != 1"> 
+							<i class="fa fa-minus" aria-hidden="true"></i> 
+						</button>
+					</div>
+					
+					<button class="add" ng-if="selected_fields[data] != 'text' && selected_fields[data] != 'textarea' && selected_fields[data]" 
+							ng-click="add_value( data )"> <i class="fa fa-plus" aria-hidden="true"></i> </button>
+					
+					<br>
+					<label ng-if="vals[data]" for="default-val-{{data}}"> Select a default value: </label>
+					<select ng-if="vals[data]" name="default-val-{{data}}"  ng-model="defaults[data]" ng-options="val as val for val in vals[data]" > </select>
+				
+			</div>
+		</div>
+		
+		<button id="add_column" ng-click="add_columns()"> 
+			Add Column <i class="fa fa-plus" aria-hidden="true"></i>
+		</button>
+	</div>
+	
+	<p class="feedback" ng-if="view_pass[2]">Great you have added at least one column, you can now move onto the next step or add more columns.</p>
+</div>

@@ -1,0 +1,57 @@
+<ul class="steps">
+	<li ng-click="change_step( 0 )"> Step 1 : Gravity Form </li>
+	<li ng-click="change_step( 1 )"> Step 2 : Addtional Columns </li>
+	<li ng-click="change_step( 2 )"> Step 3 : Groups </li>
+	<li class="active"> Step 4 : Confirm </li>
+</ul>
+<div class="step-content">
+<p> Below is a rough rendering of what your new columns will look like.</p>
+<table class="wp-list-table widefat fixed">
+	<thead>
+		<tr>
+			<th ng-repeat="id in columns_data"> <b>{{column_titles[id]}}</b></th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+		<td ng-repeat="id in columns_data">
+			<span ng-if="selected_fields[id] == 'radio'" ng-repeat="val in vals[id]">
+				<label for="radio={{id}}-{{val}}"> {{ val }}</label>
+				<input for="name={{id}}-{{val}}" ng-if="selected_fields[id] == 'radio'" type="radio" value="{{val}}" />
+			</span>
+			
+			<input ng-if="selected_fields[id] == 'text'" type="{{selected_fields[id]}}" value="{{vals[id][1]}}" />
+			<select ng-if="selected_fields[id] == 'dropdown'" ng-model="placeholder[id][1]"  ng-options="val for val in vals[id]"> </select>
+			<textarea ng-if="selected_fields[id] == 'textarea'"> </textarea>
+		</td>
+		</tr>
+		<tr>
+		<td ng-repeat="id in columns_data">
+			<span ng-if="selected_fields[id] == 'radio'" ng-repeat="val in vals[id]">
+				<label for="radio={{id}}-{{val}}"> {{ val }}</label>
+				<input for="name={{id}}-{{val}}" ng-if="selected_fields[id] == 'radio'" type="radio" value="{{val}}" />
+			</span>
+			
+			<input ng-if="selected_fields[id] == 'text'" type="{{selected_fields[id]}}" value="{{vals[id][1]}}" />
+			<select ng-if="selected_fields[id] == 'dropdown'" ng-model="placeholder[id][2]"  ng-options="val for val in vals[id]"> </select>
+			<textarea ng-if="selected_fields[id] == 'textarea'"> </textarea>
+		</td>
+		</tr>
+		
+	    <tr>
+		<td ng-repeat="id in columns_data">
+			<span ng-if="selected_fields[id] == 'radio'" ng-repeat="val in vals[id]">
+				<label for="radio={{id}}-{{val}}"> {{ val }}</label>
+				<input for="name={{id}}-{{val}}" ng-if="selected_fields[id] == 'radio'" type="radio" value="{{val}}" />
+			</span>
+			
+			<input ng-if="selected_fields[id] == 'text'" type="{{selected_fields[id]}}" value="{{vals[id][1]}}" />
+			<select ng-if="selected_fields[id] == 'dropdown'" ng-model="placeholder[id][3]"  ng-options="val for val in vals[id]"> </select>
+			<textarea ng-if="selected_fields[id] == 'textarea'"> </textarea>
+		</td>
+		</tr>
+	</tbody>
+
+</table>
+	
+</div>

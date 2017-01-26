@@ -1,0 +1,161 @@
+#TB_ajaxContent {
+	width:100%!important;
+	padding:0px!important;
+}
+#TB_ajaxContent .bottom-half {
+	width: 97.5%;
+    position: absolute;
+    height: 50px;
+    padding: 10px;
+    bottom:0px;
+    background-color: #fff;
+}
+
+#TB_ajaxContent .bottom-half button {
+	  display: inline-block;
+	  float:right;
+	  -webkit-border-radius: 0;
+	  -moz-border-radius: 0;
+	  border-radius: 0px;
+	  font-family: Arial;
+	  color: #ffffff;
+	  font-size: 20px;
+	  background: #175782;
+	  padding: 10px 20px 10px 20px;
+	  text-decoration: none;
+	  border: none;
+	  cursor:pointer;
+}
+
+#TB_ajaxContent .bottom-half button:hover {
+	background: #0b4d75;
+    text-decoration: none;
+}
+
+#TB_ajaxContent .steps li {
+    display: inline-block;
+    font-weight: 700;
+    font-size: 1.1em;
+    margin-left: 5px;
+    padding: 10px;
+    background-color: #eee;
+    cursor:pointer;
+}
+
+#TB_ajaxContent .steps li:hover {
+	background-color:#dee;
+}
+
+#TB_ajaxContent .steps li.active {
+	 background-color: #dee;
+}
+
+#TB_ajaxContent .current-shortcode {
+	padding: 5px;
+    background-color: #eee;
+    width: 80%;
+    display: inline-block;
+}
+#TB_ajaxContent .current-shortcode p {
+	padding: 0px;
+    margin: 0px;
+    font-weight: 200;
+}
+#TB_ajaxContent .feedback {
+	padding: 10px;
+    margin-top: 20px;
+	color: #3c763d;
+    background-color: #dff0d8;
+    border-color: #d6e9c6;
+    position: absolute;
+    width: 95%;
+    bottom: 60px;
+} 
+#TB_ajaxContent .warning {
+	color: #a94442;
+    background-color: #f2dede;
+    border-color: #ebccd1;
+    font-size:16px;
+    padding: 15px;
+} 
+
+.step-content {
+	padding: 0px 10px 10px 10px;
+}
+.step-content span {
+	display:block;
+}
+#TB_ajaxContent select {
+	height: 40px;
+    width: 100px;
+}
+
+#add_column {
+	float: right;
+}
+
+#remove_column {
+	float:right;
+}
+.column {
+	    margin-top: 10px;
+	    background-color: #fff;
+}
+
+.column .column-header {
+    background-color: #67b2e4;
+    padding: 5px 11px;
+}
+
+.column .column-header h3 {
+	display: inline-block;
+    margin: 5px;
+}
+
+.column .column-content {
+	padding:10px;
+	border: #ddd solid 1px;
+}
+
+.column .column-content .add {
+	display:inline-block;
+}
+
+.column .column-content select, input {
+	margin-bottom: 12px;
+
+}
+
+#TB_ajaxContent .column select {
+	height: 30px;
+}
+
+#TB_ajaxContent p {
+	padding:0px;
+}
+
+.column .column-content .values {
+	margin-right: 15px;
+	display:inline-block;
+}
+.columns {
+    margin-bottom: 100px;
+}
+.columns button {
+	border-radius: 0px;
+    color: #ffffff;
+    font-size: 14px;
+    background: #3498db;
+    padding: 5px 10px 5px 10px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+} 
+.columns button .values {
+	    font-size: 10px;
+	
+}
+
+#TB_ajaxContent button[disabled="disabled"] {
+	opacity: 0.5;
+}

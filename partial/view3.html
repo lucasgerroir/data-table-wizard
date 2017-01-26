@@ -1,0 +1,13 @@
+<ul class="steps">
+	<li ng-click="change_step( 0 )"> Step 1 : Gravity Form </li>
+	<li ng-click="change_step( 1 )"> Step 2 : Addtional Columns </li>
+	<li class="active"> Step 3 : Groups </li>
+</ul>
+<div class="step-content">
+	<p> Please select a group that you would like to restict table access to. If you have not added the appropriate users to a specific groups please do so here.</p>
+	<label for="group"> Please Select a group </label>
+	<select name="group" ng-change="passed_step( 3 )" ng-model="selected_group.group" ng-options="groups.name for groups in groups_data"> </select>
+	<p class="warning" ng-if="warnings['groups'] == 'create'"> You need to create a Group to be able to use this wizard. Gravity Forms can be created on this page. </p>
+	<p class="warning" ng-if="warnings['groups'] == 'activate'"> You need to install and activate the Groups plugin  </p>
+	<p class="feedback" ng-if="selected_group.group">Great you have selected a group for this table, now move onto the next step!</p>
+</div>
