@@ -1,51 +1,36 @@
 (function(){
      angular.module('data_wizard_app',[])
-    .controller('Controller', ['$scope', function($scope) {
-	
+    .controller('Controller', ['$scope', function($scope, $route) {
+    	
     	$scope.form_data = php_vars["forms"];
 		$scope.groups_data = php_vars["groups"];
 		$scope.warnings = php_vars["warnings"];
 		
-		var views = ["view1", "view2", "view3", "view4"];
-    	var column_field_types = ["text", "dropdown", "textarea", "radio"];
+		// add the option to not add a group to the table
+		$scope.groups_data.push({name : "None", group_id : null });
+		
+		$scope.views = ["view1", "view2", "view3", "view4"];
+		$scope.column_field_types = ["text", "dropdown", "textarea", "radio"];
+    	
+		$scope.column_count  = 1;
+		
 
-		$scope.init_app = function() {
-			
-	    	var column_count  = 1;
-	    	$scope.view_pass = { 1: false, 2: false, 3: false, 4: true };
+    	
+		setInterval(function() {
+		  	
+	  		
+	  		if (jQuery(".feedback").is(":visible")) {
+	  		    	 jQuery(".feedback").delay(1800).fadeOut();
+	  		}
+	  		   
+	  		}, 1000);
 
-	    	$scope.columns_data = [1];
-
-	    	$scope.view = views[0];
-	    	$scope.nextViewNumber = 1;
-	    	
-	    	$scope.column_field_types = column_field_types;
-	    	
-			$scope.selected_form = { "selected" : null };
-			$scope.selected_group = { "selected" : null };
-			
-			$scope.selected_fields = {};
-			$scope.values= {};
-			$scope.vals = {};
-			$scope.defaults = {};
-			$scope.placeholder = {};
-			
-			$scope.column_titles = { 1 : "Column 1" };
-
-      		 setInterval(function() {
-      			 
-      		if (jQuery(".feedback").is(":visible")) {
-      		    	 jQuery(".feedback").delay(1800).fadeOut();
-      		     }
-      		   
-      		}, 1000);
-        }
-
+		
     	$scope.nextView = function() { 
     		
-    		if ($scope.nextViewNumber < views.length) {
+    		if ($scope.nextViewNumber < $scope.views.length) {
     			
-        		$scope.view = views[$scope.nextViewNumber];
+        		$scope.view = $scope.views[$scope.nextViewNumber];
         		$scope.nextViewNumber++;
     		}
     	}
@@ -53,7 +38,7 @@
     	$scope.change_step = function ( num ) {
     		
     		$scope.nextViewNumber =  num + 1;
-    		$scope.view = views[num];
+    		$scope.view = $scope.views[num];
     	}
     	
     	$scope.passed_step = function( num ) {
@@ -63,9 +48,9 @@
     	
     	$scope.add_columns = function() {
        	 	
-    		column_count++;
-          	$scope.columns_data.push(column_count);
-          	$scope.column_titles[column_count] = "Column " + column_count;
+    		$scope.column_count++;
+          	$scope.columns_data.push($scope.column_count);
+          	$scope.column_titles[$scope.column_count] = "Column " + $scope.column_count;
           	
           	jQuery("#data-column").sortable({
           		stop: sortEventHandler
@@ -147,11 +132,57 @@
     		
     	}
     	
-    	
-        jQuery("#add-data-table").click( $scope.init_app );
+
     
     }]);
      
 
      
 })();
+
+jQuery(document).ready(function(){
+	
+
+	
+	function init_app() {
+		
+		
+		
+
+	}
+ 
+	jQuery('#add-data-table').click( function(){
+		
+		var controllerElement = document.querySelector('#data_table_wizard_module div');
+		var $scope = angular.element(controllerElement).scope();
+		
+		$scope.$apply(function(){
+			
+	    	$scope.view_pass = { 1: false, 2: false, 3: false, 4: true };
+
+			$scope.columns_data = [1];
+
+			$scope.view = $scope.views[0];
+			$scope.nextViewNumber = 1;
+	    	
+	    	
+			$scope.selected_form = { "selected" : null };
+			$scope.selected_group = { "selected" : null };
+			
+			$scope.selected_fields = {};
+			$scope.values= {};
+			$scope.vals = {};
+			$scope.defaults = {};
+			$scope.placeholder = {};
+			
+			$scope.column_titles = { 1 : "Column 1" };
+			
+		});
+			
+		
+	});
+	
+});
+
+	
+

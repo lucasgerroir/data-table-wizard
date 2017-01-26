@@ -92,8 +92,9 @@ class data_table_wizard_plugin  {
     
     public function add_wizard_app() {
     	
-    	echo '<div id="data_table_wizard_module"  style="display:none;" ng-app="data_wizard_app" >
-    			<div ng-controller="Controller" ng-init="init_app()">
+    	echo '
+    			<div id="data_table_wizard_module"  style="display:none;" ng-app="data_wizard_app" >
+    			<div ng-controller="Controller">
 	                	<div ng-if="view == \'view1\'" ng-include="\'' . DTW_DIR_URL . '/partial/view1.html\'"></div>
 	                	<div ng-if="view == \'view2\'" ng-include="\'' . DTW_DIR_URL . '/partial/view2.html\'"></div>
 	                	<div ng-if="view == \'view3\'" ng-include="\'' . DTW_DIR_URL . '/partial/view3.html\'"></div>
