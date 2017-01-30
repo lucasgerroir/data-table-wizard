@@ -4,7 +4,7 @@
 	<li class="active"> Step 3 : Groups </li>
 </ul>
 <div class="step-content">
-	<p> Please select a group that you would like to restict table access to. If you have not added the appropriate users to a specific groups please do so here.</p>
+	<p> Please select a group that you would like to restict table access to. If you have not added a group click <a href="{{ url }}/admin.php?page=groups-admin"> here </a> to do so.</p>
 	<label for="group"> Please Select a group </label>
 	<select name="group" ng-change="passed_step( 3 )" ng-model="selected_group.group" ng-options="groups.name for groups in groups_data"> </select>
 	<p class="warning" ng-if="warnings['groups'] == 'create'"> You need to create a Group to be able to use this wizard. Gravity Forms can be created on this page. </p>

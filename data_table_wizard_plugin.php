@@ -131,10 +131,13 @@ class data_table_wizard_plugin  {
 			$warning["groups"] = "activate";
 		}
 		
+		$url = admin_url();
+		
 		
 		$data["forms"] = $forms;
 		$data["groups"] = $groups;
 		$data["warnings"] = $warning;
+		$data["url"] = $url;
 		
 		
 		wp_localize_script( 'data_table_wizard', 'php_vars', $data );

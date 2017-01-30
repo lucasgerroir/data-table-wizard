@@ -2,7 +2,7 @@
 	<li class="active"> Step 1 : Gravity Form </li>
 </ul>
 <div class="step-content">
-	<p> Please select the gravity form you want to build the data table from. If you are not sure which table you want all tables can be found here</p>
+	<p> Please select the gravity form you want to build the data table from. If you are not sure which table you want, all the forms can be found <a target="_blank" href="{{ url }}/admin.php?page=gf_edit_forms">here</a></p>
 	<label for="gravity-form"> Please select a gravity form</label>
 	<select name="gravity-form" ng-change="passed_step( 1 )" ng-model="selected_form.form" ng-options="forms.title for forms in form_data"> </select>
 	<p class="warning" ng-if="warnings['forms'] == 'create'"> You need to create a Gravity Form to be able to use this wizard. Gravity Forms can be created on this page. </p>

@@ -65,7 +65,9 @@
 	padding: 0px;
     margin: 0px;
     font-weight: 200;
+    font-size: 1em;
 }
+    
 #TB_ajaxContent .feedback {
 	padding: 10px;
     margin-top: 20px;
@@ -85,7 +87,7 @@
 } 
 
 .step-content {
-	padding: 0px 10px 10px 10px;
+	padding: 0px 20px 10px 20px;
 }
 .step-content span {
 	display:block;
@@ -137,6 +139,7 @@
 
 #TB_ajaxContent p {
 	padding:0px;
+	font-size: 1.2em;
 }
 
 .column .column-content .values {

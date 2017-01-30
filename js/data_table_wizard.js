@@ -1,23 +1,40 @@
 (function(){
      angular.module('data_wizard_app',[])
     .controller('Controller', ['$scope', function($scope, $route) {
-    	
+    
     	$scope.form_data = php_vars["forms"];
 		$scope.groups_data = php_vars["groups"];
 		$scope.warnings = php_vars["warnings"];
+		$scope.url = php_vars["url"];
 		
 		// add the option to not add a group to the table
-		$scope.groups_data.push({name : "None", group_id : null });
+		if (php_vars["groups"]) {
+			$scope.groups_data.push({name : "None", group_id : null });
+		}
 		
 		$scope.views = ["view1", "view2", "view3", "view4"];
-		$scope.column_field_types = ["text", "dropdown", "textarea", "radio"];
+		$scope.column_field_types = [ 
+		                             
+              { "value" : "text",     "text" : "Single Line Text" },
+              { "value" : "select",   "text" : "Drop Down"}, 
+              { "value" : "textarea", "text" : "Paragraph Text"}, 
+              { "value" : "radio",    "text" : "Radio Buttons" }
+		                              
+		 ];
     	
 		$scope.column_count  = 1;
 		
 
     	
 		setInterval(function() {
-		  	
+
+		 	
+			if (jQuery("#data-column").is(":visible") && !jQuery('#data-column').hasClass('ui-sortable') && jQuery("#data-column .column").length > 1) {
+				
+		      	jQuery("#data-column").sortable({
+	          		stop: sortEventHandler
+	          	});
+			}
 	  		
 	  		if (jQuery(".feedback").is(":visible")) {
 	  		    	 jQuery(".feedback").delay(1800).fadeOut();
@@ -39,6 +56,7 @@
     		
     		$scope.nextViewNumber =  num + 1;
     		$scope.view = $scope.views[num];
+    		
     	}
     	
     	$scope.passed_step = function( num ) {
@@ -52,29 +70,59 @@
           	$scope.columns_data.push($scope.column_count);
           	$scope.column_titles[$scope.column_count] = "Column " + $scope.column_count;
           	
-          	jQuery("#data-column").sortable({
-          		stop: sortEventHandler
-          	});
     	}
     	
     	var sortEventHandler = function(event, ui){
     		
     		var ordered_obj = [];
+    		var column_titles = {};
+    	
+    		
+    		jQuery("#data-column .column-header").each(function(i) {
     			
-    		jQuery("#data-column .column-header").each(function() {
     			var id = jQuery(this).data("id");
     			ordered_obj.push(id);
+
     		});
-    		
+   
     		$scope.columns_data = ordered_obj;
     	};
     	
-    	$scope.add_value= function( id ) {
+    	$scope.add_value = function( id ) {
        	 	
     		var current_val  = $scope.values[id][$scope.values[id].length-1];
     		current_val++;
     		$scope.values[id].push(current_val);
     		
+    	}
+
+    	
+    	$scope.trim_input_value = function(id, value_id ) {
+    		
+    		var trimmed_string = $scope.vals[id][value_id].replace(/\s/g, '');
+   
+    		$scope.temp_arr[value_id] = trimmed_string;
+   
+    		$scope.vals_trimmed[id] = $scope.temp_arr;
+
+    		console.log($scope.vals_trimmed[id]);
+    	}
+    	
+    	$scope.input_value = function( id, value_id ) {
+    		
+    		var trimmed_string = $scope.vals[id][value_id].replace(/\s/g, '');
+    		   
+    		$scope.temp_arr[value_id] = trimmed_string;
+   
+    		$scope.vals_trimmed[id] = $scope.temp_arr;
+    		
+    		$scope.vals[id][value_id].trim();
+   
+    		$scope.defaults[id] = $scope.vals[id][1];
+    
+    		if ($scope.values[1] && $scope.vals[1][1]) {
+    			$scope.view_pass[2] = true;
+    		}	
     	}
     	
     	$scope.remove_columns = function( id ) {
@@ -101,14 +149,6 @@
     	
     	}
     	
-    	$scope.input_value = function( id ) {
-    		
-    		$scope.defaults[id] = $scope.vals[id][1];
-    		
-    		if ($scope.values[1] && $scope.vals[1][1]) {
-    			$scope.view_pass[2] = true;
-    		}	
-    	}
     	
     	$scope.remove_value = function( id, val_id ) {
     		
@@ -132,33 +172,42 @@
     		
     	}
     	
+	  	$scope.insertShortcode = function(id) {
+	  	  
+	  	 var mce_content,
+	  	 	 new_content,
+	  	 	 shortcode = jQuery(".current-shortcode").text();
+	  		
+	  	  if (jQuery("#wp-content-wrap").hasClass("tmce-active")) {
+	  		  mce_content = tinyMCE.activeEditor.getContent();
+	  		  new_content = mce_content +  shortcode;
+	  		  tinyMCE.activeEditor.setContent(new_content);
 
+	      } else {
+	    	  mce_content = jQuery('.wp-editor-area').val();
+	    	  new_content = mce_content +  shortcode;
+	    	  console.log(new_content);
+	    	  jQuery('.wp-editor-area').val(new_content);
+	      }
+
+
+	    }
+    
     
     }]);
      
-
-     
 })();
 
-jQuery(document).ready(function(){
+jQuery(document).ready(function() {
 	
-
-	
-	function init_app() {
-		
-		
-		
-
-	}
+	var controllerElement = document.querySelector('#data_table_wizard_module div');
+	var $scope = angular.element(controllerElement).scope();
  
-	jQuery('#add-data-table').click( function(){
-		
-		var controllerElement = document.querySelector('#data_table_wizard_module div');
-		var $scope = angular.element(controllerElement).scope();
+	jQuery('#add-data-table').click( function() {
 		
 		$scope.$apply(function(){
 			
-	    	$scope.view_pass = { 1: false, 2: false, 3: false, 4: true };
+	    	$scope.view_pass = { 1: false, 2: true, 3: false, 4: true };
 
 			$scope.columns_data = [1];
 
@@ -172,6 +221,8 @@ jQuery(document).ready(function(){
 			$scope.selected_fields = {};
 			$scope.values= {};
 			$scope.vals = {};
+			$scope.vals_trimmed = [];
+			$scope.temp_arr = [];
 			$scope.defaults = {};
 			$scope.placeholder = {};
 			
