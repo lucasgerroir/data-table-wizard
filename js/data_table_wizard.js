@@ -24,11 +24,8 @@
     	
 		$scope.column_count  = 1;
 		
-
-    	
 		setInterval(function() {
-
-		 	
+			
 			if (jQuery("#data-column").is(":visible") && !jQuery('#data-column').hasClass('ui-sortable') && jQuery("#data-column .column").length > 1) {
 				
 		      	jQuery("#data-column").sortable({
@@ -183,76 +180,100 @@
 
 	    }
     
-    
     }]);
      
 })();
 
 jQuery(document).ready(function() {
 	
-	
 	var controllerElement = document.querySelector('#data_table_wizard_module div');
 	var $scope = angular.element(controllerElement).scope();
-	var regex = php_vars["regex"];
-	var current_values = php_vars["current_values"];
+	var id_post = jQuery("#post_ID").attr('value');
+	
 
 	jQuery('#add-data-table').click( function() {
 		
-		$scope.$apply(function() {
-			
-			var column_data = current_values["added_columns"];
-			
-			$scope.selected_fields = {};
-			$scope.columns_data = [];
-			$scope.column_titles = {};
-			$scope.values = [];
-			$scope.vals= {};
-			$scope.selected_form = {};
-			$scope.selected_group = {};
-			
-			if(column_data) {
-				
-				for (var index in column_data) { 
-					
-					var new_arr = [];
-					$scope.columns_data.push(index);
-					$scope.selected_fields[index] = column_data[index].field;
-					$scope.column_titles[index] =  column_data[index].name;
-					$scope.vals[index] = column_data[index].values;
-				
-					
-					for (var id in column_data[index].values) { 
-						new_arr.push(id);
-					}
-					
-					$scope.values[index] = new_arr;
-					
-				}
-				
-			} else {
-				$scope.columns_data.pish(1);
-				$scope.column_titles = { 1 : "Column 1" };
-			}
-			
-	    	$scope.view_pass = { 
-    			1: (current_values["form"]) ? true : false, 
-				2: true, 
-				3: (current_values["filterbygroup"]) ? true : false,
-				4: true 
-			};
-	    	
-	    	$scope.columns_select = (current_values["added_columns"]) ? true : false;
-			$scope.view = $scope.views[0];
-			$scope.nextViewNumber = 1;
-			$scope.selected_form["form"] = (current_values["form"]) ? current_values["form"].id : '';
-			$scope.selected_group["group"] = (current_values["filterbygroup"]) ?  current_values["filterbygroup"] : '';
-			
-			
-			
-			$scope.defaults = {};
+    	var mce_content = (jQuery("#wp-content-wrap").hasClass("tmce-active")) ? tinyMCE.activeEditor.getContent() :  mce_content = jQuery('.wp-editor-area').val();
+    	jQuery("#views").hide();
 		
-		});
-			
+    	init_module = function(data) {
+    		
+	    	$scope.$apply(function() {
+	    			
+	    			var column_data = data["added_columns"];
+	    			
+	    			$scope.selected_fields = {};
+	    			$scope.columns_data = [];
+	    			$scope.column_titles = {};
+	    			$scope.values = [];
+	    			$scope.vals= {};
+	    			$scope.selected_form = {};
+	    			$scope.selected_group = {};
+	    			$scope.defaults = {};
+	    			
+	    			if(column_data) {
+	    				
+	    				for (var index in column_data) { 
+	    					
+	    					var new_arr = [];
+	    					$scope.columns_data.push(index);
+	    					$scope.selected_fields[index] = column_data[index].field;
+	    					$scope.column_titles[index] =  column_data[index].name;
+	    					$scope.vals[index] = column_data[index].values;
+	    					
+	    					// right now defaults are not stored on shortcode so I set each default to the first value
+	    					$scope.defaults[index] = column_data[index].values[1];
+	    							
+	    					for (var id in column_data[index].values) { 
+	    						new_arr.push(id);
+	    					}
+	    					
+	    					$scope.values[index] = new_arr;
+	    				}
+	    				
+	    			} else {
+	    				
+	    				$scope.columns_data.push(1);
+	    				$scope.column_titles = { 1 : "Column 1" };
+	    			}
+	    			
+	    	    	$scope.view_pass = { 
+	        			1: (data["form"]) ? true : false, 
+	    				2: true, 
+	    				3: (data["filterbygroup"]) ? true : false,
+	    				4: true 
+	    			};
+	    	    	
+	    	    	$scope.columns_select = (data["added_columns"]) ? true : false;
+	    			$scope.view = $scope.views[0];
+	    			$scope.nextViewNumber = 1;
+	    			$scope.selected_form["form"] = (data["form"]) ? data["form"].id : '';
+	    			$scope.selected_group["group"] = (data["filterbygroup"]) ?  data["filterbygroup"] : '';
+	    			
+	    			
+	    		
+	    		});
+	    	
+	    		jQuery("#views").fadeIn();
+    		}
+		
+    	jQuery.ajax({
+            type: 'POST',
+            url: ajaxurl,
+            data: {
+                action: 'get_shotcode_data',
+                post_id: id_post,
+                post_content: encodeURIComponent(mce_content)
+            },
+            success: function(data) {
+            	data = JSON.parse(data);
+            	init_module(data)
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown) {
+                console.log("Error with retrieving column data: " + errorThrown);
+            }
+        });
+    	
 		
 	});
 	

@@ -2,36 +2,21 @@
 
 
 class data_table_wizard_plugin  {
-
-   /**
-    * @return array of option meta data.
-    */
-    public function getOptionMetaData() {
-
-        return array(
-            //'_version' => array('Installed Version'), // Leave this one commented-out. Uncomment to test upgrades.
-            'ATextInput' => array(__('Enter in some text', 'my-awesome-plugin')),
-            'AmAwesome' => array(__('I like this awesome plugin', 'my-awesome-plugin'), 'false', 'true'),
-            'CanDoSomething' => array(__('Which user role can do something', 'my-awesome-plugin'),
-                                        'Administrator', 'Editor', 'Author', 'Contributor', 'Subscriber', 'Anyone')
-        );
-    }
-
-    protected function initOptions() {
-        $options = $this->getOptionMetaData();
-        if (!empty($options)) {
-            foreach ($options as $key => $arr) {
-                if (is_array($arr) && count($arr > 1)) {
-                    $this->addOption($key, $arr[1]);
-                }
-            }
-        }
-       
-    }
+	
+	protected $wp_jdt;
+	protected $post_id;
+	protected $post_content;
+	
+	function __construct() {
+		
+		$this->wp_jdt = null;
+		$this->post_id = null;
+		$this->post_content = "";
+	}
+	
     
    public function activate() {
    	
-    	
     }
     
     public function deactivate() {
@@ -44,18 +29,13 @@ class data_table_wizard_plugin  {
 
     public function addActionsAndFilters() {
 		
-        // Add options administration page
-        add_action('admin_menu', [&$this, 'addSettingsSubMenuPage']);
-      
-        
-    
        // script & style just for the options administration page
       if (is_admin()) {
       	
       	add_action('media_buttons', [&$this, 'add_wizard_button'], 15);
       	add_action('media_buttons', [&$this, 'add_wizard_app'], 14);
-      	add_action('admin_menu', [&$this, 'get_gravity_forms']);
-      	add_action( 'wp_ajax_my_action_name', [&$this,'my_action_callback'] );
+      	add_action('admin_menu', [&$this, 'get_external_plugin_info']);
+      	add_action( 'wp_ajax_get_shotcode_data', [&$this,'get_shotcode_data'] );
       	
       }
                
@@ -98,7 +78,7 @@ class data_table_wizard_plugin  {
     	
     	echo '
     			<div id="data_table_wizard_module"  style="display:none;" ng-app="data_wizard_app" >
-    			<div ng-controller="Controller">
+    			<div ng-controller="Controller" id="views">
 	                	<div ng-if="view == \'view1\'" ng-include="\'' . DTW_DIR_URL . '/partial/view1.html\'"></div>
 	                	<div ng-if="view == \'view2\'" ng-include="\'' . DTW_DIR_URL . '/partial/view2.html\'"></div>
 	                	<div ng-if="view == \'view3\'" ng-include="\'' . DTW_DIR_URL . '/partial/view3.html\'"></div>
@@ -115,56 +95,75 @@ class data_table_wizard_plugin  {
     	echo '<a href="#TB_inline?width=800&height=550&inlineId=data_table_wizard_module" title="Data Table Wizard" id="add-data-table" class="button thickbox"> <i class="fa fa-table" aria-hidden="true"></i> Review Table </a>';
 	}
 	
-	public function get_gravity_forms() {
+	public function get_external_plugin_info() {
 		
 		$data = [];
 
 		if ( method_exists  ( "RGFormsModel", "get_forms" ))  {
+			
 			$forms = RGFormsModel::get_forms( true );
 			$warning["forms"] = (empty($forms)) ? "create" : NULL;
 		} else {
+			
 			$forms = NULL;
 			$warning["forms"] = "activate";
 		}
 		
 		if ( method_exists ( "Groups_Group", "get_groups") ) {
+			
 			$groups = Groups_Group::get_groups();
 			$warning["groups"] = (empty($groups)) ? "create" : NULL;
 		} else {
+			
 			$groups = NULL;
 			$warning["groups"] = "activate";
 		}
 		
 		$url = admin_url();
-		$ajax_url = admin_url('admin-ajax.php');
 		
 		$data["forms"] = $forms;
 		$data["groups"] = $groups;
 		$data["warnings"] = $warning;
 		$data["url"] = $url;
-		$data["regex"] =  get_shortcode_regex();
-		$data["current_values"] = self::current_values();
 
 		wp_localize_script( 'data_table_wizard', 'php_vars', $data );
 	}
 	
-	public function current_values() {
-		
-		$current_values = [];
+	public function set_data_tables_shortcode( ){
 		
 		$wp_jdt = self::get_shortcode('wp_jdt');
-		$directory = self::get_shortcode('directory');
 		
-		$form = self::get_attribute("form", $directory[0]);
-		$edit = self::get_attribute("edit", $wp_jdt[0]);
-		$filterbygroup = self::get_attribute("filterbygroup", $wp_jdt[0]);
+		return $wp_jdt[0];
+
+	}
+	
+	public function get_group_data() {
+		
+		if (is_null($this->wp_jdt)) {
+			return null;
+		}
+		
+		$filterbygroup = self::get_attribute("filterbygroup", $this->wp_jdt);
+		
+		return $filterbygroup;
+	}
+	
+	public function get_coumn_data() {
+		
+		
+		if (is_null($this->wp_jdt)) {
+			return null;
+		}
+		
+		$edit = self::get_attribute("edit", $this->wp_jdt);
 		
 		$columns = explode(",", $edit);
 		
 		if (is_array($columns)) {
-				
+		
 			$column_struct = [];
 			$id = 1;
+				
 			foreach ($columns as $column) {
 		
 				$each_col_attr = explode("|", $column);
@@ -172,30 +171,64 @@ class data_table_wizard_plugin  {
 				$column_struct[$id]["direction"] = $each_col_attr[1];
 		
 				$values = explode("*", $each_col_attr[2]);
-		
+				
 				$column_struct[$id]["field"] = $values[0];
-				unset($values[0]);
-		
-				$column_struct[$id]["values"] = $values;
-		
+				
+				// added this because currently text don't have values
+				// when values are added to text remove this if statement
+				if ($values[0] == "text") {
+					
+					$obj = (object) array('1' => 'value1');
+					$column_struct[$id]["values"] = $obj;
+				} else {
+					
+					unset($values[0]);
+					$column_struct[$id]["values"] = $values;
+				}
+			
 				$id++;
 			}
 		}
 		
+		return $column_struct;
+		
+	}
+	
+
+	public function get_gravity_forms_dir_shortcode() {
+	
+		$directory = self::get_shortcode('directory');
+		
+		if (is_null($directory)) {
+			return null;
+		}
+			
+		$form = self::get_attribute("form", $directory[0]);
+		
 		if ( method_exists  ( "RGFormsModel", "get_form" ))  {
 			$form = RGFormsModel::get_form( intval ($form) );
 			($form ==  false) ? NULL : $form;
-		} 
+		}
 		
-		$current_values["added_columns"] = $column_struct;
-		$current_values["form"] = $form;
-		$current_values["filterbygroup"] = $filterbygroup;
+		return $form;
+		
+	}
+	
+	public function current_values() {
+		
+		$this->wp_jdt = self::set_data_tables_shortcode();
+	
+		$current_values = [];
+
+		$current_values["added_columns"] = self::get_coumn_data(  );
+		$current_values["form"] = self::get_gravity_forms_dir_shortcode(  );
+		$current_values["filterbygroup"] = self::get_group_data(  );
 	
 		return $current_values;
 		
 	}
 	
-	public function get_attribute( $attr, $content ){
+	public function get_attribute( $attr, $content ) {
 		
 		$search = '/' . $attr . '="([^"]+)"/';
 		preg_match($search, $content, $matches);
@@ -205,11 +238,16 @@ class data_table_wizard_plugin  {
 	
 	public function get_shortcode( $shortcode ) {
 		
-
 		$pattern = get_shortcode_regex();
 		
-		$post_content = get_post($_GET['post']);
-		$content = $post_content->post_content;
+		if (empty($this->post_content)) {
+			
+			$post_content = get_post($this->post_id);
+			$content = $post_content->post_content;
+		
+		} else {
+			$content = $this->post_content;
+		}
 		
 		preg_match_all("/$pattern/", $content, $matches);
 		
@@ -223,62 +261,18 @@ class data_table_wizard_plugin  {
 			return $attr;
 		}
 		
-		return;
+		return null;
 	}
 	
-	public function my_action_callback() {
-		global $wpdb; // this is how you get access to the database
-		
-		echo "hello";
-		$whatever = $_POST['data'];
-	
-		echo $whatever;
+	public function get_shotcode_data() {
+
+		$this->post_id =  $_POST["post_id"];
+		$this->post_content = urldecode ( $_POST["post_content"] );
+
+		$current_values = self::current_values();
+		echo json_encode($current_values);
 	
 		exit(); // this is required to return a proper result & exit is faster than die();
 	}
-   
-   /**
-    * Puts the configuration page in the Plugins menu by default.
-    * Override to put it elsewhere or create a set of submenus
-    * Override with an empty implementation if you don't want a configuration page
-    * @return void
-    */
-    public function addSettingsSubMenuPage() {
-    	
-         add_options_page(  "Data Table Wizard",
-         				 "Data Table Wizard",
-                         'manage_options',
-         				 'data_table_wizard',
-                         array(&$this, 'settingsPage'));
-    }
-    
-   /**
-    * Creates HTML for the Administration page to set options for this plugin.
-    * Override this method to create a customized page.
-    * @return void
-    */
-    public function settingsPage() {
-    	
-    	if (!current_user_can('manage_options')) {
-    		wp_die(__('You do not have sufficient permissions to access this page.', 'wp_jquery_database_creator'));
-    	}
-    
-    	$optionMetaData = $this->getOptionMetaData();
-    
-    	// Save Posted Options
-    	if ($optionMetaData != null) {
-    		foreach ($optionMetaData as $aOptionKey => $aOptionMeta) {
-    			if (isset($_POST[$aOptionKey])) {
-    				$this->updateOption($aOptionKey, $_POST[$aOptionKey]);
-    			}
-    		}
-    	}
-    	
-    	echo "<h2>This is the admin</h2>";
-    			
-       
-     
-    }   
-        
 
 }
