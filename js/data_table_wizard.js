@@ -75,8 +75,6 @@
     	var sortEventHandler = function(event, ui){
     		
     		var ordered_obj = [];
-    		var column_titles = {};
-    	
     		
     		jQuery("#data-column .column-header").each(function(i) {
     			
@@ -84,7 +82,7 @@
     			ordered_obj.push(id);
 
     		});
-   
+
     		$scope.columns_data = ordered_obj;
     	};
     	
@@ -95,27 +93,16 @@
     		$scope.values[id].push(current_val);
     		
     	}
-
     	
-    	$scope.trim_input_value = function(id, value_id ) {
+    	$scope.input_value_blur = function(id, value_id){
     		
-    		var trimmed_string = $scope.vals[id][value_id].replace(/\s/g, '');
-   
-    		$scope.temp_arr[value_id] = trimmed_string;
-   
-    		$scope.vals_trimmed[id] = $scope.temp_arr;
-
-    		console.log($scope.vals_trimmed[id]);
+    		$scope.vals[id][value_id] = $scope.vals[id][value_id].replace(/\s/g, '')
     	}
     	
     	$scope.input_value = function( id, value_id ) {
+    	
     		
-    		var trimmed_string = $scope.vals[id][value_id].replace(/\s/g, '');
-    		   
-    		$scope.temp_arr[value_id] = trimmed_string;
-   
-    		$scope.vals_trimmed[id] = $scope.temp_arr;
-    		
+
     		$scope.vals[id][value_id].trim();
    
     		$scope.defaults[id] = $scope.vals[id][1];
@@ -162,6 +149,9 @@
     	
     	$scope.selected_field_type = function(id) {
     		
+    		// the user has chosen to add a column
+    		$scope.columns_select  = true;
+    		
     		//delete the previous choice values
     		delete $scope.values[id];
     		delete $scope.vals[id];
@@ -186,10 +176,10 @@
 	      } else {
 	    	  mce_content = jQuery('.wp-editor-area').val();
 	    	  new_content = mce_content +  shortcode;
-	    	  console.log(new_content);
 	    	  jQuery('.wp-editor-area').val(new_content);
 	      }
-
+	  	 
+	  	  tb_remove();
 
 	    }
     
@@ -200,38 +190,73 @@
 
 jQuery(document).ready(function() {
 	
+	
 	var controllerElement = document.querySelector('#data_table_wizard_module div');
 	var $scope = angular.element(controllerElement).scope();
- 
+	var regex = php_vars["regex"];
+	var current_values = php_vars["current_values"];
+
 	jQuery('#add-data-table').click( function() {
 		
-		$scope.$apply(function(){
+		$scope.$apply(function() {
 			
-	    	$scope.view_pass = { 1: false, 2: true, 3: false, 4: true };
-
-			$scope.columns_data = [1];
-
-			$scope.view = $scope.views[0];
-			$scope.nextViewNumber = 1;
-	    	
-	    	
-			$scope.selected_form = { "selected" : null };
-			$scope.selected_group = { "selected" : null };
+			var column_data = current_values["added_columns"];
 			
 			$scope.selected_fields = {};
-			$scope.values= {};
-			$scope.vals = {};
-			$scope.vals_trimmed = [];
-			$scope.temp_arr = [];
+			$scope.columns_data = [];
+			$scope.column_titles = {};
+			$scope.values = [];
+			$scope.vals= {};
+			$scope.selected_form = {};
+			$scope.selected_group = {};
+			
+			if(column_data) {
+				
+				for (var index in column_data) { 
+					
+					var new_arr = [];
+					$scope.columns_data.push(index);
+					$scope.selected_fields[index] = column_data[index].field;
+					$scope.column_titles[index] =  column_data[index].name;
+					$scope.vals[index] = column_data[index].values;
+				
+					
+					for (var id in column_data[index].values) { 
+						new_arr.push(id);
+					}
+					
+					$scope.values[index] = new_arr;
+					
+				}
+				
+			} else {
+				$scope.columns_data.pish(1);
+				$scope.column_titles = { 1 : "Column 1" };
+			}
+			
+	    	$scope.view_pass = { 
+    			1: (current_values["form"]) ? true : false, 
+				2: true, 
+				3: (current_values["filterbygroup"]) ? true : false,
+				4: true 
+			};
+	    	
+	    	$scope.columns_select = (current_values["added_columns"]) ? true : false;
+			$scope.view = $scope.views[0];
+			$scope.nextViewNumber = 1;
+			$scope.selected_form["form"] = (current_values["form"]) ? current_values["form"].id : '';
+			$scope.selected_group["group"] = (current_values["filterbygroup"]) ?  current_values["filterbygroup"] : '';
+			
+			
+			
 			$scope.defaults = {};
-			$scope.placeholder = {};
-			
-			$scope.column_titles = { 1 : "Column 1" };
-			
+		
 		});
 			
 		
 	});
+	
+
 	
 });
 

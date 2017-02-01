@@ -1,6 +1,6 @@
 <div class="current-shortcode" > 
-   		<p>[directory form="<b>{{selected_form["form"].id}}</b>" lightboxsettings="images,entry"]</p> 
-	    <p>[wp_jdt rank=true class="gf_directory" edit="<span ng-repeat="data in columns_data" ng-if="selected_fields[1]"><b>{{ column_titles[data] }}|left|{{selected_fields[data]}}<span ng-repeat="val in vals_trimmed[data]" ng-if="selected_fields[data] != 'text'"><span ng-if="val">*</span>{{ val }}</span><span ng-if="$last == false">,</span></b></span>" filterbygroup="<b>{{selected_group["group"].name}}</b>" ] 
+   		<p>[directory form="<b>{{selected_form.form}}</b>" lightboxsettings="images,entry"]</p> 
+	    <p>[wp_jdt rank=true class="gf_directory" edit="<span ng-repeat="data in columns_data" ng-if="columns_select"><b>{{ column_titles[data] }}|left|{{selected_fields[data]}}<span ng-repeat="val_tr in vals[data]" ng-if="selected_fields[data] != 'text'"><span ng-if="val_tr">*</span>{{ val_tr }}</span><span ng-if="$last == false">,</span></b></span>" filterbygroup="<b>{{selected_group.group}}</b>" ] 
 	    </p>
 </div>
 

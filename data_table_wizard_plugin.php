@@ -46,14 +46,17 @@ class data_table_wizard_plugin  {
 		
         // Add options administration page
         add_action('admin_menu', [&$this, 'addSettingsSubMenuPage']);
+      
+        
     
        // script & style just for the options administration page
       if (is_admin()) {
       	
       	add_action('media_buttons', [&$this, 'add_wizard_button'], 15);
       	add_action('media_buttons', [&$this, 'add_wizard_app'], 14);
-      	add_action('admin_init', [&$this, 'get_gravity_forms']);
-
+      	add_action('admin_menu', [&$this, 'get_gravity_forms']);
+      	add_action( 'wp_ajax_my_action_name', [&$this,'my_action_callback'] );
+      	
       }
                
     }
@@ -83,11 +86,12 @@ class data_table_wizard_plugin  {
     			wp_enqueue_script( 'data_table_wizard' );
     			wp_enqueue_style( 'data_table_wizard_css', DTW_DIR_URL . '/css/data_table_wizard.css');
     			wp_enqueue_style( 'data_table_wizard_css', DTW_DIR_URL . '/css/font-awesome.min.css');
+    			
  
     		}
 
     	}
-    	 
+    	
     }
     
     public function add_wizard_app() {
@@ -132,15 +136,105 @@ class data_table_wizard_plugin  {
 		}
 		
 		$url = admin_url();
-		
+		$ajax_url = admin_url('admin-ajax.php');
 		
 		$data["forms"] = $forms;
 		$data["groups"] = $groups;
 		$data["warnings"] = $warning;
 		$data["url"] = $url;
-		
-		
+		$data["regex"] =  get_shortcode_regex();
+		$data["current_values"] = self::current_values();
+
 		wp_localize_script( 'data_table_wizard', 'php_vars', $data );
+	}
+	
+	public function current_values() {
+		
+		$current_values = [];
+		
+		$wp_jdt = self::get_shortcode('wp_jdt');
+		$directory = self::get_shortcode('directory');
+		
+		$form = self::get_attribute("form", $directory[0]);
+		$edit = self::get_attribute("edit", $wp_jdt[0]);
+		$filterbygroup = self::get_attribute("filterbygroup", $wp_jdt[0]);
+		
+		$columns = explode(",", $edit);
+		
+		if (is_array($columns)) {
+				
+			$column_struct = [];
+			$id = 1;
+			foreach ($columns as $column) {
+		
+				$each_col_attr = explode("|", $column);
+				$column_struct[$id]["name"] = $each_col_attr[0];
+				$column_struct[$id]["direction"] = $each_col_attr[1];
+		
+				$values = explode("*", $each_col_attr[2]);
+		
+				$column_struct[$id]["field"] = $values[0];
+				unset($values[0]);
+		
+				$column_struct[$id]["values"] = $values;
+		
+				$id++;
+			}
+		}
+		
+		if ( method_exists  ( "RGFormsModel", "get_form" ))  {
+			$form = RGFormsModel::get_form( intval ($form) );
+			($form ==  false) ? NULL : $form;
+		} 
+		
+		$current_values["added_columns"] = $column_struct;
+		$current_values["form"] = $form;
+		$current_values["filterbygroup"] = $filterbygroup;
+	
+		return $current_values;
+		
+	}
+	
+	public function get_attribute( $attr, $content ){
+		
+		$search = '/' . $attr . '="([^"]+)"/';
+		preg_match($search, $content, $matches);
+
+		return $matches[1];
+	}
+	
+	public function get_shortcode( $shortcode ) {
+		
+
+		$pattern = get_shortcode_regex();
+		
+		$post_content = get_post($_GET['post']);
+		$content = $post_content->post_content;
+		
+		preg_match_all("/$pattern/", $content, $matches);
+		
+		$lm_shortcode = array_keys($matches[2], $shortcode);
+		
+		if (!empty($lm_shortcode)) {
+			
+			foreach($lm_shortcode as $sc) {
+				$attr[] = $matches[3][$sc];
+			}
+			return $attr;
+		}
+		
+		return;
+	}
+	
+	public function my_action_callback() {
+		global $wpdb; // this is how you get access to the database
+		
+		echo "hello";
+		$whatever = $_POST['data'];
+	
+		echo $whatever;
+	
+		exit(); // this is required to return a proper result & exit is faster than die();
 	}
    
    /**
