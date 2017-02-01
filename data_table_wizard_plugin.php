@@ -264,6 +264,7 @@ class data_table_wizard_plugin  {
 		return null;
 	}
 	
+
 	public function get_shotcode_data() {
 
 		$this->post_id =  $_POST["post_id"];

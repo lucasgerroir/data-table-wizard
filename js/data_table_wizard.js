@@ -7,6 +7,15 @@
 		$scope.warnings = php_vars["warnings"];
 		$scope.url = php_vars["url"];
 		
+		// add tool tips for each page here
+		$scope.tool_tips = {
+				view1 : "The table is built from gravity form entries. You have to select what form's entry data you want to display in the table. This is a list of all the forms created on your wordpress site.",
+				view2 : "You can add and remove new columns. For each column you must select a field type. Based off of the field types you can create values.",
+				view3 : "This is a list of all the groups created on this wordpress site. If you only want certain users to be able to view the table add them to a specific group and select it here.",
+				view4 : "This is a render of what the columns you have created will look like. The Gravity form's data will be displayed in columns beside this table",
+				bottom : "You can watch the shortcodes for the table be generated here."
+		}
+		
 		// add the option to not add a group to the table
 		if (php_vars["groups"]) {
 			$scope.groups_data.push({name : "None", group_id : null });
@@ -47,6 +56,8 @@
         		$scope.view = $scope.views[$scope.nextViewNumber];
         		$scope.nextViewNumber++;
     		}
+    		
+    	
     	}
     	
     	$scope.change_step = function ( num ) {
