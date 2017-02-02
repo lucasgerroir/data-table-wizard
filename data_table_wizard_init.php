@@ -1,14 +1,19 @@
 <?php
 
-
+/*
+ * Initiate the plugin
+ * @param string $file directory path to file
+ */
 function data_table_wizard_init($file) {
 
     require_once('data_table_wizard_plugin.php');
     $DTW_PLugin = new data_table_wizard_plugin();
  
-    // Add callbacks to hooks
+    // Callbacks to hooks
     $DTW_PLugin->addActionsAndFilters();
     $DTW_PLugin->registerScripts();
+    
+    // initate wordpress thickbox
     $DTW_PLugin->add_Thickbox();
  
     if (!$file) {

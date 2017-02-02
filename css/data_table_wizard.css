@@ -183,6 +183,8 @@
     margin-left: 5px;
 }
 
+/***** This css is all for the tool tips *****************************/
+
 
 /* Base styles for the element that has a tooltip */
 [data-tooltip],
@@ -319,3 +321,6 @@
   margin-left: 0;
   margin-bottom: -16px;
 }
+
+
+/***** End  css is all for the tool tips *****************************/
