@@ -36,13 +36,6 @@ class data_table_wizard_plugin  {
     }
     
    /*
-    * Main plugin file name.
-    */
-    protected function getMainPluginFileName() {
-        return 'data_table_wizard_plugin.php';
-    }
-
-   /*
     * Add all the action and filters necessary for plugin.
     */
     public function addActionsAndFilters() {
@@ -363,10 +356,21 @@ class data_table_wizard_plugin  {
 		// current chosen form id
 		$form_id = $_POST["form_id"];
 		
-		$data["entries"] = GFAPI::get_entries($form_id);
+		$entries = GFAPI::get_entries($form_id);
 		$data["fields"] = RGFormsModel::get_form_meta($form_id)["fields"];
+		
+		$inputs = [];
+		//var_dump($entries);
+		foreach($entries as $key=>$value) {
+			
+			foreach($value as $key2=>$value2) {
+				$inputs[$value2["id"]] = $value2["inputs"];
+			}
+			
+		}
+		var_dump($inputs);
 	
-		echo json_encode($data);
+		//echo json_encode($data);
 		
 		exit(); 
 	}

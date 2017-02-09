@@ -14,7 +14,6 @@ function data_table_wizard() {
     load_plugin_textdomain('data_table_wizard_plugin', false, $pluginDir . '/languages/');
 }
 
-
 //////////////////////////////////
 // Run initialization
 /////////////////////////////////

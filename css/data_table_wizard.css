@@ -15,6 +15,7 @@
 }
 
 #TB_ajaxContent .bottom-half button {
+	  
 	  display: inline-block;
 	  float:right;
 	  -webkit-border-radius: 0;
@@ -24,7 +25,7 @@
 	  color: #ffffff;
 	  font-size: 20px;
 	  background: #175782;
-	  padding: 10px 20px 10px 20px;
+	  padding: 16px 20px 16px 20px;
 	  text-decoration: none;
 	  border: none;
 	  cursor:pointer;
@@ -46,11 +47,11 @@
 }
 
 #TB_ajaxContent .steps li:hover {
-	background-color:#dee;
+	background-color:#ddd;
 }
 
 #TB_ajaxContent .steps li.active {
-	 background-color: #dee;
+	 background-color: #ddd;
 }
 
 #TB_ajaxContent .current-shortcode {
@@ -89,9 +90,7 @@
 .step-content {
 	padding: 0px 20px 10px 20px;
 }
-.step-content span {
-	display:block;
-}
+
 #TB_ajaxContent select {
 	height: 40px;
     width: 100px;
@@ -137,9 +136,33 @@
 	height: 30px;
 }
 
+#TB_ajaxContent ul.steps {
+	padding-left: 10px;
+}
+
 #TB_ajaxContent p {
 	padding:0px;
 	font-size: 1.2em;
+}
+#TB_ajaxContent table {
+	min-height: 350px;
+}
+
+.step-content .field-area {
+	padding: 20px 20px;
+    border: #eee solid 2px;
+}
+#TB_ajaxContent .step-content .field-area p {
+	font-size: 12px;
+	padding: 0px;
+}
+.render .field-area {
+	padding: 5px 15px;
+    border: #eee solid 2px;
+    margin-top: 10px;
+}
+.step-content span {
+	display:block;
 }
 
 .column .column-content .values {
@@ -184,7 +207,6 @@
 }
 
 /***** This css is all for the tool tips *****************************/
-
 
 /* Base styles for the element that has a tooltip */
 [data-tooltip],

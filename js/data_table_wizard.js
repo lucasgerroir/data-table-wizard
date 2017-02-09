@@ -17,7 +17,11 @@
 				view1 : "The table is built from gravity form entries. You have to select what form's entry data you want to display in the table. This is a list of all the forms created on your wordpress site.",
 				view2 : "You can add and remove new columns. For each column you must select a field type. Based off of the field types you can create values.",
 				view3 : "This is a list of all the groups created on this wordpress site. If you only want certain users to be able to view the table add them to a specific group and select it here.",
-				view4 : "This is a render of what the columns you have created will look like. The Gravity form's data will be displayed in columns beside this table",
+				view4 : 
+				[   // add multiple per page by adding them in an array and specifying the index in the view. ex tool_tips['view4'][0]
+				 	"This is a render of what the columns you have created will look like. The Gravity form's data will be displayed in columns beside this table",
+				 	"You can click on the above steps to go back and change these values at any time."
+				],
 				bottom : "You can watch the shortcodes for the table be generated here."
 		}
 		
@@ -76,8 +80,8 @@
 	                form_id: form_id,
 	            },
 	            success: function(data) {
-	            	data = JSON.parse(data);
 	            	console.log(data);
+	            	data = JSON.parse(data);
 	            	$scope.form_entries = data;
 	            },
 	            error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -93,7 +97,8 @@
     		
     		// if the view is render view get all the entries.
     		if ($scope.nextViewNumber == 3) {
-    			get_entries();
+    			$scope.form_name = $scope.form_data.filter(function(obj){ return (obj.id==$scope.selected_form.form); })[0].title;
+    			//get_entries();
     		}
     		
     		// check if its the last view.
@@ -171,7 +176,8 @@
 		*/
     	$scope.input_value_blur = function(id, value_id){
     		
-    		$scope.vals[id][value_id] = $scope.vals[id][value_id].replace(/\s/g, '')
+    		$scope.vals[id][value_id] = $scope.vals[id][value_id].replace(/\s/g, '');
+    		$scope.defaults[id] = $scope.vals[id][1];
     	}
     	
        /*
@@ -372,6 +378,7 @@ jQuery(document).ready(function() {
 	    			$scope.nextViewNumber = 1;
 	    			
 	    			// form chosen.
+	    			$scope.form_name = (data["form"]) ? data["form"].title : '';
 	    			$scope.selected_form["form"] = (data["form"]) ? data["form"].id : '';
 	    			
 	    			// group chosen.

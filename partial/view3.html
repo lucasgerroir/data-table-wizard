@@ -6,10 +6,14 @@
 </ul>
 
 <div class="step-content">
-	<p> Please select a group that you would like to restict table access to. If you have not added a group click <a target="_blank" href="{{ url }}/admin.php?page=groups-admin"> here </a> to do so.</p>
-	<label for="group"> Please Select a group </label>
-	<select name="group" ng-change="passed_step( 3 )" ng-model="selected_group.group" ng-options="groups.name as groups.name for groups in groups_data"> </select>
-	<span class="tooltip-right" data-tooltip="{{ tool_tips[view] }}"><i class="fa fa-question-circle" aria-hidden="true"></i></span>
+	<p> Please select a group that you would like to restrict table access to. If you have not added a group click <a target="_blank" href="{{ url }}/admin.php?page=groups-admin"> here </a> to do so.</p>
+	
+	<div class="field-area">
+		<label for="group"> Please Select a group </label>
+		<select name="group" ng-change="passed_step( 3 )" ng-model="selected_group.group" ng-options="groups.name as groups.name for groups in groups_data"> </select>
+		<span class="tooltip-right" data-tooltip="{{ tool_tips[view] }}"><i class="fa fa-question-circle" aria-hidden="true"></i></span>
+	</div>
+	
 	<p class="warning" ng-if="warnings['groups'] == 'create'"> You need to create a Group to be able to use this wizard. Gravity Forms can be created on this page. </p>
 	<p class="warning" ng-if="warnings['groups'] == 'activate'"> You need to install and activate the Groups plugin  </p>
 	<p class="feedback" ng-if="selected_group.group">Great you have selected a group for this table, now move onto the next step!</p>
