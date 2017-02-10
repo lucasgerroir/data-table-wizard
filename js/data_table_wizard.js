@@ -64,26 +64,31 @@
 	  		   
 	  	}, 1000);
 		
+	   /*
+		* Make sure the user has filled in all the column fields if they haven't stop them from going to the next step.
+		*/
 		$scope.form_feedback = function ( id , va_id ) {
-		
+		    
+			// cycle through all inputs.
     		var val = true;
     		jQuery("#data-column").find("input").each(function() {
     		   
     		   var element = jQuery(this);
     		   var col_id = element.data("col");
     		   var value_id = element.data("val");
-    		   	   
+    		   
+    		   // when removing make sure we are not looking at the removed inputs. 
     		   if (id + "." + va_id == value_id || !va_id && col_id == id) {
-    			   console.log("efefef");
     			   return false;
     		   }    
-    			
+    		   // an input is empty.	
 			   if (element.val() == "") {
 				   val = false;
 			   }
 	
     		});
     		
+    		// disable the user from going to the next step.
     		if (val) {
     			$scope.view_pass[2] = true;
     		} else {
@@ -320,7 +325,7 @@ jQuery(document).ready(function() {
 		
 		// get the current content for the ajax call.
     	var mce_content = (jQuery("#wp-content-wrap").hasClass("tmce-active")) ? tinyMCE.activeEditor.getContent() :  mce_content = jQuery('.wp-editor-area').val();
-    	console.log(mce_content);
+
     	// hide the view content so it loads in nicely after ajax call.
     	jQuery("#views").hide();
 		
