@@ -3,7 +3,7 @@
 <span class="tooltip-right" data-tooltip="{{ tool_tips.bottom }}"><i class="fa fa-question-circle" aria-hidden="true"></i></span>
 <div class="current-shortcode" > 
    		<p>[directory form="<b>{{selected_form.form}}</b>" lightboxsettings="images,entry"]</p> 
-	    <p>[wp_jdt rank=true class="gf_directory" edit="<span ng-repeat="data in columns_data" ng-if="columns_select"><b>{{ column_titles[data] }}|left|{{selected_fields[data]}}<span ng-repeat="val_tr in vals[data]" ng-if="selected_fields[data] != 'text'"><span ng-if="val_tr">*</span>{{ val_tr }}</span><span ng-if="$last == false">,</span></b></span>" filterbygroup="<b>{{selected_group.group}}</b>" ] 
+	    <p>[wp_jdt rank=true class="gf_directory" edit="<span ng-repeat="data in columns_data" ng-if="columns_select"><b>{{ column_titles[data] }}|left|default*{{defaults[data]}}|{{selected_fields[data]}}<span ng-repeat="val_tr in vals[data]"><span ng-if="val_tr">*</span>{{ val_tr }}</span><span ng-if="$last == false">,</span></b></span>" filterbygroup="<b>{{selected_group.group}}</b>" ] 
 	    </p>
 </div>
 

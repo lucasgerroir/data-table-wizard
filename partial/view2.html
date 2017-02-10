@@ -16,15 +16,15 @@
 			</div>
 			<div class="column-content">
 				<label for="column-title-{{data}}"> Column Title: </label>
-				<input type="text" name="column-title-{{data}}" ng-model="column_titles[data]"/> <br>
+				<input type="text" name="column-title-{{data}}" ng-change="form_feedback(0)" ng-model="column_titles[data]"/> <br>
 				<label for="column-fields-{{data}}"> Select column field type: </label>
 
 				<select name="column-fields-{{data}}" ng-change="selected_field_type(data)" ng-model="selected_fields[data]" ng-options="fields.value as fields.text for fields in column_field_types" > </select>
 				<br>
 					<div class="values" ng-repeat="val in values[data]">
 					<br>
-						<label for="column-value-{{data}}"> Value {{ val }}: </label>
-						<input type="text" name="column-value-{{val}}" ng-blur="input_value_blur(data, val)"  ng-change="input_value(data, val)" ng-model="vals[data][val]" />
+						<label for="column-value-{{data}}-{{val}}"> Value {{ val }}: </label>
+						<input type="text" name="column-value-{{data}}-{{val}}" data-val="{{data}}.{{val}}" data-col="{{data}}" ng-blur="input_value_blur(data, val)"  ng-change="input_value(data, val)" ng-model="vals[data][val]" />
 						<button ng-click="remove_value( data, val )" ng-if="selected_fields[data] != 'text' && selected_fields[data] != 'textarea' && values[data] != 1"> 
 							<i class="fa fa-minus" aria-hidden="true"></i> 
 						</button>

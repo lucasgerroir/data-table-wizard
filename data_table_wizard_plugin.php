@@ -47,7 +47,6 @@ class data_table_wizard_plugin  {
       	add_action('media_buttons', [&$this, 'add_wizard_app'], 14);
       	add_action('admin_menu', [&$this, 'get_external_plugin_info']);
       	add_action( 'wp_ajax_get_shotcode_data', [&$this,'get_shotcode_data'] );
-      	add_action( 'wp_ajax_get_form_data', [&$this,'get_form_data'] );
       	
       }
                
@@ -230,23 +229,20 @@ class data_table_wizard_plugin  {
 				// the direction, at this point not really important.
 				$column_struct[$id]["direction"] = $each_col_attr[1];
 				
+				// grab the default value
+				$column_struct[$id]["default"] = explode("*", $each_col_attr[2])[1];
+
 				// get all the values for the column 
-				$values = explode("*", $each_col_attr[2]);
+				$values = explode("*", $each_col_attr[3]);
 				
 				// the field type chosen for this column
 				$column_struct[$id]["field"] = $values[0];
 				
 				// added this because currently text don't have values
 				// when values are added to text remove this if statement
-				if ($values[0] == "text") {
-					
-					$obj = (object) array('1' => 'value1');
-					$column_struct[$id]["values"] = $obj;
-				} else {
-					
-					unset($values[0]);
-					$column_struct[$id]["values"] = $values;
-				}
+				unset($values[0]);
+				$column_struct[$id]["values"] = $values;
+		
 			
 				$id++;
 			}
@@ -345,35 +341,7 @@ class data_table_wizard_plugin  {
 		return null;
 	}
 	
-   /*
-	* AJAX call to get the entry infromation based on the chosen gravity form. 
-	* @return object  $data on the field labels and entries for the form.
-	*/
-	public function get_form_data() {
-		
-		$data = [];
-		
-		// current chosen form id
-		$form_id = $_POST["form_id"];
-		
-		$entries = GFAPI::get_entries($form_id);
-		$data["fields"] = RGFormsModel::get_form_meta($form_id)["fields"];
-		
-		$inputs = [];
-		//var_dump($entries);
-		foreach($entries as $key=>$value) {
-			
-			foreach($value as $key2=>$value2) {
-				$inputs[$value2["id"]] = $value2["inputs"];
-			}
-			
-		}
-		var_dump($inputs);
-	
-		//echo json_encode($data);
-		
-		exit(); 
-	}
+
 	
    /*
 	* AJAX call to get the shortcode information from current page/post content.

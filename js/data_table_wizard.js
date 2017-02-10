@@ -60,36 +60,39 @@
 	  		if (jQuery(".feedback").is(":visible")) {
 	  		    	 jQuery(".feedback").delay(1800).fadeOut();
 	  		}
+	  		
 	  		   
 	  	}, 1000);
 		
-	   /*
-		* Get all the entries based on the current chosen form. This is for the render view.
-		*/
-		function get_entries() {
-			
-			// chosen form id
-			var form_id = $scope.selected_form.form;
-			
-			// ajax call to get entries and field labels.
-	    	jQuery.ajax({
-	            type: 'POST',
-	            url: ajaxurl,
-	            data: {
-	                action: 'get_form_data',
-	                form_id: form_id,
-	            },
-	            success: function(data) {
-	            	console.log(data);
-	            	data = JSON.parse(data);
-	            	$scope.form_entries = data;
-	            },
-	            error: function(XMLHttpRequest, textStatus, errorThrown) {
-	                console.log("Error with retrieving form: " + errorThrown);
-	            }
-	        });
-		}
+		$scope.form_feedback = function ( id , va_id ) {
 		
+    		var val = true;
+    		jQuery("#data-column").find("input").each(function() {
+    		   
+    		   var element = jQuery(this);
+    		   var col_id = element.data("col");
+    		   var value_id = element.data("val");
+    		   	   
+    		   if (id + "." + va_id == value_id || !va_id && col_id == id) {
+    			   console.log("efefef");
+    			   return false;
+    		   }    
+    			
+			   if (element.val() == "") {
+				   val = false;
+			   }
+	
+    		});
+    		
+    		if (val) {
+    			$scope.view_pass[2] = true;
+    		} else {
+    			$scope.view_pass[2] = false;
+    		}
+
+    	}
+		
+
 	   /*
 		* When clicking on the main step button get the next view.
 		*/
@@ -98,7 +101,6 @@
     		// if the view is render view get all the entries.
     		if ($scope.nextViewNumber == 3) {
     			$scope.form_name = $scope.form_data.filter(function(obj){ return (obj.id==$scope.selected_form.form); })[0].title;
-    			//get_entries();
     		}
     		
     		// check if its the last view.
@@ -138,6 +140,8 @@
           	// add a default column title based on the id.
           	$scope.column_titles[$scope.column_count] = "Column " + $scope.column_count;
           	
+          	$scope.view_pass[2] = false;
+          	
     	}
     	
        /*
@@ -167,6 +171,8 @@
     		current_val++;
     		$scope.values[id].push(current_val);
     		
+    		$scope.view_pass[2] = false;
+    		
     	}
     	
        /*
@@ -175,9 +181,11 @@
 		* can be removed. As well the function call on the inputs in view 2 need to be removed.
 		*/
     	$scope.input_value_blur = function(id, value_id){
-    		
-    		$scope.vals[id][value_id] = $scope.vals[id][value_id].replace(/\s/g, '');
-    		$scope.defaults[id] = $scope.vals[id][1];
+    
+    		if ($scope.vals[id] && $scope.vals[id][value_id]) {
+    			$scope.vals[id][value_id] = $scope.vals[id][value_id].replace(/\s/g, '');
+    			$scope.defaults[id] = $scope.vals[id][1];
+    		}
     	}
     	
        /*
@@ -185,14 +193,17 @@
 		*/
     	$scope.input_value = function( id, value_id ) {
     	
-    		$scope.vals[id][value_id].trim();
-   
-    		$scope.defaults[id] = $scope.vals[id][1];
-    
-    		if ($scope.values[1] && $scope.vals[1][1]) {
-    			$scope.view_pass[2] = true;
-    		}	
+    		if ($scope.vals[id][value_id]  != "") {
+        		
+    			$scope.vals[id][value_id].trim();   
+        		$scope.defaults[id] = $scope.vals[id][1];
+    		}
+    		
+    		$scope.form_feedback(0);
+    	
     	}
+    	
+
     	
        /*
 		* When remove button is pushed on column, remove that column and delete all its data.
@@ -217,6 +228,8 @@
         		// remove values
         		delete $scope.vals[id];
         		
+        		$scope.form_feedback( id );
+        		
     		}
     	
     	}
@@ -231,6 +244,8 @@
 			$scope.values[id].splice(index, 1);
     		
     		delete $scope.vals[id][val_id];
+    		
+    		$scope.form_feedback(id, val_id);
     		
     	}
     	
@@ -249,6 +264,7 @@
     		var val_obj = [];
 			val_obj.push(1);
 			$scope.values[id] = val_obj;
+			
     		
     	}
     	
@@ -304,13 +320,13 @@ jQuery(document).ready(function() {
 		
 		// get the current content for the ajax call.
     	var mce_content = (jQuery("#wp-content-wrap").hasClass("tmce-active")) ? tinyMCE.activeEditor.getContent() :  mce_content = jQuery('.wp-editor-area').val();
-    	
+    	console.log(mce_content);
     	// hide the view content so it loads in nicely after ajax call.
     	jQuery("#views").hide();
 		
     	// triggered when ajax request is successful. Sets all the setting values.
     	init_module = function(data) {
-    		
+   
     		// apply these setting values to the controller scope.
 	    	$scope.$apply(function() {
 	    			
@@ -348,7 +364,7 @@ jQuery(document).ready(function() {
 	    					$scope.vals[index] = column_data[index].values;
 	    					
 	    					// right now defaults are not stored on shortcode so I set each default to the first value
-	    					$scope.defaults[index] = column_data[index].values[1];
+	    					$scope.defaults[index] = column_data[index]["default"];
 	    							
 	    					for (var id in column_data[index].values) { 
 	    						// this is for values id.
@@ -367,7 +383,7 @@ jQuery(document).ready(function() {
 	    			// set what steps the user is allowed to pass.
 	    	    	$scope.view_pass = { 
 	        			1: (data["form"]) ? true : false, 
-	    				2: true, 
+	    				2: (column_data) ? true : false,
 	    				3: (data["filterbygroup"]) ? true : false,
 	    				4: true 
 	    			};
@@ -383,9 +399,7 @@ jQuery(document).ready(function() {
 	    			
 	    			// group chosen.
 	    			$scope.selected_group["group"] = (data["filterbygroup"]) ?  data["filterbygroup"] : '';
-	    			
-	    			
-	    		
+
 	    		});
 	    		
 	    		// once the ajax call is complete fade content in
