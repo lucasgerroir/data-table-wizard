@@ -1,6 +1,6 @@
-Boc Toc
+Data Table Wizard
 ==========
-A Wordpress used by UBC
+A Wordpress plugin used by UBC
 
 This plugin creates a wizard that sets up shortcodes for gravity forms and WP jQuery Data Tables. 
 One must have the following plugins activated for this plugin to be useful:
